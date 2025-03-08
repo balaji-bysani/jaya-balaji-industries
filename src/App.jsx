@@ -3,15 +3,16 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Button } from './components/ui/button'
-import {Login} from "./components/login/Login"
-import {Register} from "./components/Register/Register"
+import Login from "./components/login/Login"
+import Register from "./components/Register/Register"
+import { HashRouter } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
   const [userstate, setUserState] = useState({});
   return (
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
-      <BrowserRouter>
+      <HashRouter>
         <div>
           
           
@@ -44,7 +45,7 @@ function App() {
           
           </div>
         
-      </BrowserRouter>
+      </HashRouter>
     </div>
   )
 }

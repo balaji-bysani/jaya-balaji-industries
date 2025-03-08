@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import basestyle from "../Base.module.css";
+import basestyle from "../../../src/Base.module.css";
 import registerstyle from "./Register.module.css";
 import { useNavigate, NavLink } from "react-router-dom";
 
