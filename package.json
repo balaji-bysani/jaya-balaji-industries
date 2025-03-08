@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "react-toastify": "^10.0.4"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",

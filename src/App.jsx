@@ -3,8 +3,8 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Button } from './components/ui/button'
-import {Login} from "./components/login"
-import {Register} from "./components/Register"
+import {Login} from "./components/login/Login"
+import {Register} from "./components/Register/Register"
 
 function App() {
   const [count, setCount] = useState(0)
