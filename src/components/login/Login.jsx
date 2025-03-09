@@ -43,22 +43,22 @@ const Login = ({ setUserState }) => {
 
   useEffect(() => {
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      const Admin = { email: "Admin@gmail.com", password: "admin123" };
-      const employee = { email: "employee@gmail.com", password: "employee123" };
-      const developer = { email: "developer@gmail.com", password: "developer123" };
+      const admin = { email: "Admin@gmail.com", password: "admin123" };
+      const marker = { email: "Marker@gmail.com", password: "marker123" };
+      const supervisor = { email: "Supervisor@gmail.com", password: "supervisor123" };
 
-      if (user.email === Admin.email && user.password === Admin.password) {
+      if (user.email === admin.email && user.password === admin.password) {
         /*toast.success("Login successful!");*/
-        setUserState(Admin);
-        navigate("/ecommerce", { replace: true });
-      } else if (user.email === employee.email && user.password === employee.password) {
+        setUserState(admin);
+        navigate("/Admin", { replace: true });
+      } else if (user.email === marker.email && user.password === marker.password) {
         /*Toast.success("Login successful!");*/
-        setUserState(employee);
-        navigate("./pages/Ecommerce.jsx", { replace: true });
-      } else if (user.email === developer.email && user.password === developer.password) {
+        setUserState(marker);
+        navigate("/Marker", { replace: true });
+      } else if (user.email === supervisor.email && user.password === supervisor.password) {
         /*toast.success("Login successful!");*/
-        setUserState(developer);
-        navigate("./pages/Ecommerce.jsx", { replace: true });
+        setUserState(supervisor);
+        navigate("/Supervisor", { replace: true });
       } else {
         toast.error("Invalid email or password. Please try again.");
       }
@@ -97,7 +97,7 @@ const Login = ({ setUserState }) => {
             Login
           </button>
         </form>
-        <NavLink to="/signup">Not yet registered? Register Now</NavLink>
+        {/* <NavLink to="/signup">Not yet registered? Register Now</NavLink> */}
       </div>
     </div>
   );
