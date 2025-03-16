@@ -15,7 +15,10 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
       if (existingData) {
         setQuarryName(existingData.quarryName);
         setAlliance(existingData.alliance);
-        setBlocks(existingData.blocks);
+        setBlocks(existingData.blocks.map(block => ({
+          ...block,
+          volume: calculateVolume(block.length, block.breadth, block.height, existingData.alliance)
+        })));
       } else {
         setQuarryName("");
         setAlliance("");
@@ -26,21 +29,46 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
   }, [isOpen, existingData]);
 
   const calculateVolume = (length, breadth, height, alliance) => {
-    const l = parseFloat(length) - parseFloat(alliance);
-    const b = parseFloat(breadth) - parseFloat(alliance);
-    const h = parseFloat(height) - parseFloat(alliance);
-    if (l > 0 && b > 0 && h > 0) {
-      return ((l * b * h) / 1000000).toFixed(3);
-    }
-    return 0;
+    const l = Math.max(0, parseFloat(length) - parseFloat(alliance));
+    const b = Math.max(0, parseFloat(breadth) - parseFloat(alliance));
+    const h = Math.max(0, parseFloat(height) - parseFloat(alliance));
+    
+    if (isNaN(l) || isNaN(b) || isNaN(h) || l === 0 || b === 0 || h === 0) return "0.000";
+    
+    return ((l * b * h) / 1000000).toFixed(3);
   };
 
   const handleAddBlock = () => {
     if (newBlock.length && newBlock.breadth && newBlock.height) {
       const volume = calculateVolume(newBlock.length, newBlock.breadth, newBlock.height, alliance);
+      
       setBlocks([...blocks, { ...newBlock, id: blocks.length + 1, volume }]);
       setNewBlock({ length: "", breadth: "", height: "" });
     }
+  };
+
+  const handleBlockChange = (index, key, value) => {
+    const updatedBlocks = blocks.map((block, i) =>
+      i === index ? { 
+        ...block, 
+        [key]: value, 
+        volume: calculateVolume(
+          key === "length" ? value : block.length,
+          key === "breadth" ? value : block.breadth,
+          key === "height" ? value : block.height,
+          alliance
+        ) 
+      } : block
+    );
+    setBlocks(updatedBlocks);
+  };
+
+  const handleAllianceChange = (value) => {
+    setAlliance(value);
+    setBlocks(blocks.map(block => ({
+      ...block,
+      volume: calculateVolume(block.length, block.breadth, block.height, value)
+    })));
   };
 
   const handleSubmit = () => {
@@ -67,7 +95,7 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
           </div>
           <div>
             <label className="text-sm font-medium">Alliance (cm)</label>
-            <Input type="number" value={alliance} onChange={(e) => setAlliance(e.target.value)} />
+            <Input type="number" value={alliance} onChange={(e) => handleAllianceChange(e.target.value)} />
           </div>
         </div>
 
@@ -90,9 +118,27 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
           <TableBody>
             {blocks.map((block, index) => (
               <TableRow key={index}>
-                <TableCell>{block.length}</TableCell>
-                <TableCell>{block.breadth}</TableCell>
-                <TableCell>{block.height}</TableCell>
+                <TableCell>
+                  <Input
+                    type="number"
+                    value={block.length}
+                    onChange={(e) => handleBlockChange(index, "length", e.target.value)}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Input
+                    type="number"
+                    value={block.breadth}
+                    onChange={(e) => handleBlockChange(index, "breadth", e.target.value)}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Input
+                    type="number"
+                    value={block.height}
+                    onChange={(e) => handleBlockChange(index, "height", e.target.value)}
+                  />
+                </TableCell>
                 <TableCell>{block.volume}</TableCell>
               </TableRow>
             ))}
