@@ -1,50 +1,74 @@
-import Layout from "../sidebar/layout";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import React, { useState } from "react";
+import { Button } from "../ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import NewMarking from "./NewMarking";
 
-const initialMarkings = [
-  { id: 1, quarryName: "Granite Quarry", measurements: "50m x 30m" },
-  { id: 2, quarryName: "Marble Quarry", measurements: "40m x 25m" },
-];
+export default function Marking() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [markings, setMarkings] = useState([]);
 
-export default function MarkingPage() {
-  const [markings, setMarkings] = useState(initialMarkings);
-
-  const handleAddMarking = () => {
-    const newMarking = {
-      id: markings.length + 1,
-      quarryName: "New Quarry",
-      measurements: "45m x 20m",
-    };
+  const handleAddMarking = (newMarking) => {
     setMarkings([...markings, newMarking]);
   };
 
   return (
-    <Layout>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Markings</h1>
-        <Button onClick={handleAddMarking}>Add Marking</Button>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Markings</h1>
+      <Button onClick={() => setIsModalOpen(true)} className="mt-4">
+        Add Marking
+      </Button>
+
+      <div className="mt-4 border rounded-md">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Marking ID</TableHead>
+              <TableHead>Quarry Name</TableHead>
+              <TableHead>Alliance (cm)</TableHead>
+              <TableHead>Number of Blocks</TableHead>
+              <TableHead>Total Marked Volume (m³)</TableHead> {/* Display in m³ */}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {markings.length > 0 ? (
+              markings.map((marking) => {
+                // Calculate total marked volume in m³
+                const totalVolume = marking.blocks.reduce((sum, block) => {
+                  const volumeCm3 =
+                    (block.length - marking.alliance) *
+                    (block.breadth - marking.alliance) *
+                    (block.height - marking.alliance);
+
+                  const volumeM3 = volumeCm3 / 1000000; // Convert cm³ to m³
+                  return sum + volumeM3;
+                }, 0).toFixed(3); // Round to 3 decimal places
+
+                return (
+                  <TableRow key={marking.id}>
+                    <TableCell>{marking.id}</TableCell>
+                    <TableCell>{marking.quarryName}</TableCell>
+                    <TableCell>{marking.alliance}</TableCell>
+                    <TableCell>{marking.blocks.length}</TableCell>
+                    <TableCell>{totalVolume} </TableCell> {/* Rounded to 3 decimals */}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan="5" className="text-center">
+                  No markings added yet.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Marking ID</TableHead>
-            <TableHead>Quarry Name</TableHead>
-            <TableHead>Quarry Measurements</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {markings.map((marking) => (
-            <TableRow key={marking.id}>
-              <TableCell>{marking.id}</TableCell>
-              <TableCell>{marking.quarryName}</TableCell>
-              <TableCell>{marking.measurements}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Layout>
+      <NewMarking
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAddMarking}
+      />
+    </div>
   );
 }
