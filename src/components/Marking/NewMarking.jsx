@@ -20,58 +20,57 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
           volume: calculateVolume(block.length, block.breadth, block.height, existingData.alliance)
         })));
       } else {
-        setQuarryName("");
-        setAlliance("");
-        setBlocks([]);
+        resetForm();
       }
-      setNewBlock({ length: "", breadth: "", height: "" });
     }
   }, [isOpen, existingData]);
+
+  const resetForm = () => {
+    setQuarryName("");
+    setAlliance("");
+    setBlocks([]);
+    setNewBlock({ length: "", breadth: "", height: "" });
+  };
 
   const calculateVolume = (length, breadth, height, alliance) => {
     const l = Math.max(0, parseFloat(length) - parseFloat(alliance));
     const b = Math.max(0, parseFloat(breadth) - parseFloat(alliance));
     const h = Math.max(0, parseFloat(height) - parseFloat(alliance));
-    
-    if (isNaN(l) || isNaN(b) || isNaN(h) || l === 0 || b === 0 || h === 0) return "0.000";
-    
-    return ((l * b * h) / 1000000).toFixed(3);
+
+    return isNaN(l) || isNaN(b) || isNaN(h) || l === 0 || b === 0 || h === 0 ? "0.000" : ((l * b * h) / 1000000).toFixed(3);
   };
 
   const handleAddBlock = () => {
-    if (newBlock.length && newBlock.breadth && newBlock.height) {
-      const volume = calculateVolume(newBlock.length, newBlock.breadth, newBlock.height, alliance);
-      
-      setBlocks([...blocks, { ...newBlock, id: blocks.length + 1, volume }]);
-      setNewBlock({ length: "", breadth: "", height: "" });
+    if (!newBlock.length || !newBlock.breadth || !newBlock.height) {
+      alert("Please enter valid block dimensions.");
+      return;
     }
+
+    const volume = calculateVolume(newBlock.length, newBlock.breadth, newBlock.height, alliance);
+
+    setBlocks([...blocks, { ...newBlock, id: Date.now(), volume }]);
+    setNewBlock({ length: "", breadth: "", height: "" });
   };
 
   const handleBlockChange = (index, key, value) => {
     const updatedBlocks = blocks.map((block, i) =>
-      i === index ? { 
-        ...block, 
-        [key]: value, 
-        volume: calculateVolume(
-          key === "length" ? value : block.length,
-          key === "breadth" ? value : block.breadth,
-          key === "height" ? value : block.height,
-          alliance
-        ) 
-      } : block
+      i === index
+        ? { ...block, [key]: value, volume: calculateVolume(key === "length" ? value : block.length, key === "breadth" ? value : block.breadth, key === "height" ? value : block.height, alliance) }
+        : block
     );
     setBlocks(updatedBlocks);
   };
 
-  const handleAllianceChange = (value) => {
-    setAlliance(value);
-    setBlocks(blocks.map(block => ({
-      ...block,
-      volume: calculateVolume(block.length, block.breadth, block.height, value)
-    })));
+  const handleRemoveBlock = (index) => {
+    setBlocks(blocks.filter((_, i) => i !== index));
   };
 
   const handleSubmit = () => {
+    if (!quarryName || !alliance) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
     onAdd({ id: existingData ? existingData.id : Date.now(), quarryName, alliance, blocks });
     onClose();
   };
@@ -95,7 +94,7 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
           </div>
           <div>
             <label className="text-sm font-medium">Alliance (cm)</label>
-            <Input type="number" value={alliance} onChange={(e) => handleAllianceChange(e.target.value)} />
+            <Input type="number" value={alliance} onChange={(e) => setAlliance(e.target.value)} />
           </div>
         </div>
 
@@ -113,35 +112,33 @@ export default function NewMarking({ isOpen, onClose, onAdd, existingData }) {
               <TableHead>Breadth (cm)</TableHead>
               <TableHead>Height (cm)</TableHead>
               <TableHead>Volume (m³)</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {blocks.map((block, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Input
-                    type="number"
-                    value={block.length}
-                    onChange={(e) => handleBlockChange(index, "length", e.target.value)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Input
-                    type="number"
-                    value={block.breadth}
-                    onChange={(e) => handleBlockChange(index, "breadth", e.target.value)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Input
-                    type="number"
-                    value={block.height}
-                    onChange={(e) => handleBlockChange(index, "height", e.target.value)}
-                  />
-                </TableCell>
-                <TableCell>{block.volume}</TableCell>
+            {blocks.length > 0 ? (
+              blocks.map((block, index) => (
+                <TableRow key={block.id}>
+                  <TableCell>
+                    <Input type="number" value={block.length} onChange={(e) => handleBlockChange(index, "length", e.target.value)} />
+                  </TableCell>
+                  <TableCell>
+                    <Input type="number" value={block.breadth} onChange={(e) => handleBlockChange(index, "breadth", e.target.value)} />
+                  </TableCell>
+                  <TableCell>
+                    <Input type="number" value={block.height} onChange={(e) => handleBlockChange(index, "height", e.target.value)} />
+                  </TableCell>
+                  <TableCell>{block.volume}</TableCell>
+                  <TableCell>
+                    <Button variant="destructive" onClick={() => handleRemoveBlock(index)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan="5" className="text-center">No blocks added.</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
 

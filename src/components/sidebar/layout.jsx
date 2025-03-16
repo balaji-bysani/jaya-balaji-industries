@@ -1,20 +1,34 @@
-import { AppSidebar } from "../sidebar/sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "../ui/sidebar";
+import { AppSidebar, data } from "../sidebar/sidebar"; // Import sidebar data
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "../ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../ui/breadcrumb";
+import { useLocation, Link } from "react-router-dom";
 
 export default function Layout({ children }) {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  // Function to find the matching sidebar item
+  function findMenuPath(path, menu) {
+    for (const item of menu) {
+      if (item.items) {
+        for (const subItem of item.items) {
+          if (subItem.url === path) {
+            return {
+              mainTitle: item.title, // Main menu title
+              mainUrl: item.url, // Main menu URL
+              subTitle: subItem.title, // Submenu title
+              subUrl: subItem.url, // Submenu URL
+            };
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  const matchedItem = findMenuPath(currentPath, data.navMain);
+
   return (
     <SidebarProvider>
       <div className="flex">
@@ -28,13 +42,26 @@ export default function Layout({ children }) {
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
+                {matchedItem ? (
+                  <>
+                    {/* Main Menu Title */}
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link to={matchedItem.mainUrl}>{matchedItem.mainTitle}</Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+
+                    {/* Submenu Title */}
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>{matchedItem.subTitle}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                ) : (
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{decodeURIComponent(currentPath)}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </header>
