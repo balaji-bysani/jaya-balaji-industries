@@ -13,6 +13,7 @@ import Marker from './components/marker'
 import { AppSidebar } from './components/sidebar/sidebar'
 
 import MarkingPage from './components/Marking/Marking'
+import NewMarking from './components/Marking/NewMarking'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -51,6 +52,12 @@ function App() {
               path="/Marking"
               element={
                 <MarkingPage/>
+              } 
+      ></Route>
+      <Route
+              path="/NewMarking"
+              element={
+                <NewMarking/>
               } 
       ></Route>
      </Routes>
