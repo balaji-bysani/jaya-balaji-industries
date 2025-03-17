@@ -10,6 +10,7 @@ import {
 } from "../ui/table";
 import Layout from "../sidebar/layout";
 import { useNavigate } from "react-router-dom";
+// import axios from "axios";
 
 export default function Marking() {
   const [markings, setMarkings] = useState([]);
@@ -26,6 +27,18 @@ export default function Marking() {
       setMarkings(JSON.parse(savedMarkings));
     }
   }, []);
+
+  // useEffect(() => {
+  //   axios.get("marking/all-markings") // Fetch from backend
+  //     .then((response) => {
+  //       if (response.data.statusCode === 200) {
+  //         setMarkings(response.data.body);
+  //       } else {
+  //         console.error("Failed to fetch markings:", response.data.message);
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching data:", error));
+  // }, []);
 
   return (
     <Layout>

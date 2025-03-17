@@ -7,7 +7,7 @@ import { useLocation, Link } from "react-router-dom";
 export default function Layout({ children }) {
   const location = useLocation();
   const currentPath = location.pathname;
-
+  
   // Function to find the matching sidebar item
   function findMenuPath(path, menu) {
     for (const item of menu) {
