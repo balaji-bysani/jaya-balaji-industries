@@ -60,7 +60,7 @@ const data = {
         },
         {
           title: "Quarry",
-          url: "#",
+          url: "/jaya-balaji-industries/Quarry",
         },
        
       ],

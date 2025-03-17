@@ -1,17 +1,23 @@
-import React, { useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 import Layout from "../sidebar/layout";
 import { useNavigate } from "react-router-dom";
 
 export default function Marking() {
   const [markings, setMarkings] = useState([]);
-  const [selectedMarking, setSelectedMarking] = useState(null);
+  // const [selectedMarking, setSelectedMarking] = useState(null);
   const navigate = useNavigate();
 
   const handleRowClick = (marking) => {
-    
-    navigate("/NewMarking", { state: { marking} });
+    navigate("/NewMarking", { state: { marking } });
   };
 
   useEffect(() => {
@@ -24,15 +30,17 @@ export default function Marking() {
   return (
     <Layout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold">Markings</h1>
-
-        <Button onClick={() => { 
-          
-          navigate("/NewMarking");
-        }} className="mt-4">
-          Add Marking
-        </Button>
-
+        <h1 className="text-4xl font-bold text-left">Markings</h1>
+        <div className="mt-4 text-left">
+          <Button
+            onClick={() => {
+              navigate("/NewMarking");
+            }}
+            className="ml-0 "
+          >
+            Add Marking
+          </Button>
+        </div>
         <div className="mt-4 border rounded-md">
           <Table>
             <TableHeader>
@@ -47,18 +55,24 @@ export default function Marking() {
             <TableBody>
               {markings.length > 0 ? (
                 markings.map((marking) => {
-                  const totalVolume = marking.blocks.reduce((sum, block) => {
-                    const volumeCm3 =
-                      (block.length - marking.alliance) *
-                      (block.breadth - marking.alliance) *
-                      (block.height - marking.alliance);
+                  const totalVolume = marking.blocks
+                    .reduce((sum, block) => {
+                      const volumeCm3 =
+                        (block.length - marking.alliance) *
+                        (block.breadth - marking.alliance) *
+                        (block.height - marking.alliance);
 
-                    const volumeM3 = volumeCm3 / 1000000;
-                    return sum + volumeM3;
-                  }, 0).toFixed(3);
+                      const volumeM3 = volumeCm3 / 1000000;
+                      return sum + volumeM3;
+                    }, 0)
+                    .toFixed(3);
 
                   return (
-                    <TableRow key={marking.id} onClick={() => handleRowClick(marking)} className="cursor-pointer hover:bg-gray-100">
+                    <TableRow
+                      key={marking.id}
+                      onClick={() => handleRowClick(marking)}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
                       <TableCell>{marking.id}</TableCell>
                       <TableCell>{marking.quarryName}</TableCell>
                       <TableCell>{marking.alliance}</TableCell>
@@ -70,7 +84,7 @@ export default function Marking() {
               ) : (
                 <TableRow>
                   <TableCell colSpan="5" className="text-center">
-                    No markings added yet.
+                    No Markings added yet.
                   </TableCell>
                 </TableRow>
               )}

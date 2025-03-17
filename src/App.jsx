@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { Button } from './components/ui/button'
 import Login from "./components/login/Login"
@@ -14,6 +12,8 @@ import { AppSidebar } from './components/sidebar/sidebar'
 
 import MarkingPage from './components/Marking/Marking'
 import NewMarking from './components/Marking/NewMarking'
+import Quarry from './components/Quarry/Quarry'
+import NewQuarry from './components/Quarry/NewQuarry'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -58,6 +58,19 @@ function App() {
               path="/NewMarking"
               element={
                 <NewMarking/>
+              } 
+       ></Route>
+       
+       <Route
+              path="/Quarry"
+              element={
+                <Quarry/>
+              } 
+      ></Route>
+      <Route
+              path="/NewQuarry"
+              element={
+                <NewQuarry/>
               } 
       ></Route>
      </Routes>
